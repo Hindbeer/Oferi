@@ -1,0 +1,10 @@
+[project]
+name = "src"
+version = "0.1.0"
+description = "Oferi is a Telegram bot for Telegram channels. The project accepts posts suggested by subscribers, which the administrator can then publish to the channel."
+readme = "README.md"
+requires-python = ">=3.12.10"
+dependencies = [
+    "aiogram>=3.23.0",
+    "dotenv>=0.9.9",
+]
