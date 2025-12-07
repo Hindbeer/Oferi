@@ -22,17 +22,14 @@ Key features that have been (🟢) / will be implemented (🔴) in the project
 
 ## Launch
 
-The project uses `python 3.13` and `aiogram 3.x`. Shows how to launch using **UV**.
+The project uses `python 3.12.10` and `aiogram 3.x`. Shows how to launch using **UV**.
 
 1. Clone the repository
 ```bash
 git clone https://github.com/Hindbeer/Oferi
 cd Oferi/src
 ```
-2. Installing dependencies
-```bash
-uv pip install -r requirements.txt
-```
+2. Installing [**uv**](https://docs.astral.sh/uv/)
 3. Fill in `.env` according to the [documentation](#documentation--in-development-)
 4. Project launch
 ```bash
