@@ -51,10 +51,10 @@ Links that may be useful to you
 
 ### Contacts
 
-- ✈️ [Telegram]("https://t.me/G0golMogol") — author's personal telegram
-- 🖼 [Telegram channel]("https://t.me/fancy_kuve") — telegram channel where the bot operates
-- 🤖 [Telegram bot]("@preposition_kuve_bot") — bot example of work
-- 📹 [YouTube]("") — YouTube channel with the author's projects
-- 🗄 [Site]("https://hindbeer.github.io/Hindbeer-site/") — author's personal website
+- ✈️ [Telegram](https://t.me/G0golMogol) — author's personal telegram
+- 🖼 [Telegram channel](https://t.me/fancy_kuve) — telegram channel where the bot operates
+- 🤖 [Telegram bot](https://t.me/preposition_kuve_bot) — bot example of work
+- 📹 [YouTube](https://www.youtube.com/@kuve.) — YouTube channel with the author's projects
+- 🗄 [Site](https://hindbeer.github.io/Hindbeer-site/) — author's personal website
 
 ### 
