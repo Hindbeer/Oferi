@@ -5,6 +5,9 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
+from handlers import user
+
+
 dp = Dispatcher()
 
 
@@ -16,8 +19,7 @@ async def main() -> None:
         ),
     )
 
-    dp.include_routers()
-
+    dp.include_routers(user.router)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
