@@ -1,20 +1,20 @@
-import config
-
-from midlewares.media_group_midleware import MediaGroupMidleware
-from keyboards.admin_keyboards import admin_keyboard
-
-from aiogram import Bot, Router, F
+from aiogram import Bot, F, Router
 
 # from aiogram.enums import InputMediaType
 # from aiogram.utils.media_group import MediaGroupBuilder
-from aiogram.enums import ParseMode
-from aiogram.utils.markdown import text, code
 from aiogram.filters import CommandStart
-from aiogram.types import Message, ReplyMarkupUnion
+from aiogram.types import Message
+from aiogram.utils.markdown import code, text
+
+import config
+from keyboards.admin_keyboards import admin_keyboard
+from midlewares.media_group_midleware import MediaGroupMidleware
+from utils.media_utils import MediaUtils
 
 router = Router()
 router.message.middleware(MediaGroupMidleware())
 bot = Bot(config.BOT_TOKEN)
+media_utils = MediaUtils(bot)
 
 
 @router.message(CommandStart())
@@ -22,31 +22,6 @@ async def command_start_handler(message: Message) -> None:
     await message.answer(
         "Добро пожаловать! Кидайте сюда свои смешные приколы и анекдоты. Ваши приколы оценят админы и запостят в телеграм канал"
     )
-
-
-def get_media_id(message: Message) -> str:
-    return message.video and message.video.file_id or message.photo[-1].file_id
-
-
-async def send_media(
-    message: Message, caption: str, reply_markup: ReplyMarkupUnion
-) -> None:
-    if message.photo:
-        await bot.send_photo(
-            chat_id=config.ADMIN_ID,
-            photo=get_media_id(message),
-            caption=caption,
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=reply_markup,
-        )
-    elif message.video:
-        await bot.send_video(
-            chat_id=config.ADMIN_ID,
-            video=get_media_id(message),
-            caption=caption,
-            parse_mode=ParseMode.MARKDOWN_V2,
-            reply_markup=reply_markup,
-        )
 
 
 @router.message(F.photo | F.video)
@@ -59,7 +34,7 @@ async def forward_media(message: Message) -> None:
         sep="\n\n",
     )
 
-    await send_media(
+    await media_utils.send_media(
         message=message,
         caption=caption,
         reply_markup=admin_keyboard,
