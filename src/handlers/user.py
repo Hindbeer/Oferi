@@ -3,8 +3,10 @@ import config
 from midlewares.media_group_midleware import MediaGroupMidleware
 
 from aiogram import Bot, Router, F
-from aiogram.enums import InputMediaType
-from aiogram.utils.media_group import MediaGroupBuilder
+
+# from aiogram.enums import InputMediaType
+# from aiogram.utils.media_group import MediaGroupBuilder
+from aiogram.utils.markdown import text, code
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
@@ -15,39 +17,78 @@ bot = Bot(config.BOT_TOKEN)
 
 @router.message(CommandStart())
 async def command_start_handler(message: Message) -> None:
-    await message.answer("Отправь что-то смешное! Админи будут смеяться :)")
+    await message.answer(
+        "Добро пожаловать! Кидайте сюда свои смешные приколы и анекдоты. Ваши приколы оценят админы и запостят в телеграм канал"
+    )
 
 
 def get_media_id(message: Message) -> str:
     return message.video and message.video.file_id or message.photo[-1].file_id
 
 
-@router.message(F.photo | F.video)
-async def handle_media_group(
-    message: Message, media_group: list[Message] | None = None
-):
-    if not media_group:
+async def send_media(message: Message, caption: str) -> None:
+    if message.photo:
         await bot.send_photo(
             chat_id=config.ADMIN_ID,
             photo=get_media_id(message),
-            caption=message.caption,
+            caption=caption,
+            parse_mode="Markdown",
         )
-        return
-
-    builder = MediaGroupBuilder()
-    for message in media_group:
-        builder.add(
-            type=InputMediaType.VIDEO if message.video else InputMediaType.PHOTO,
-            media=get_media_id(message),
-            caption=message.caption,
-            caption_entities=message.caption_entities,
-            has_spoiler=message.has_media_spoiler,
-            parse_mode=None,
+    elif message.video:
+        await bot.send_video(
+            chat_id=config.ADMIN_ID,
+            video=get_media_id(message),
+            caption=caption,
+            parse_mode="Markdown",
         )
 
-    media = builder.build()
 
-    await bot.send_media_group(
-        chat_id=config.ADMIN_ID,
-        media=media,
+@router.message(F.photo | F.video)
+async def forward_media(message: Message) -> None:
+    caption = text(
+        text(message.caption if message.caption is not None else ""),
+        text(
+            code(f"👤 {message.from_user.full_name}"),
+        ),
+        sep="\n\n",
     )
+
+    await send_media(
+        message=message,
+        caption=caption,
+    )
+
+
+#
+# FIX: поправить этот кусок, чтобы можно было переслать группу медиа
+#
+# @router.message(F.photo | F.video)
+# async def handle_media_group(
+#     message: Message, media_group: list[Message] | None = None
+# ) -> None:
+#     if not media_group:
+#         await bot.send_photo(
+#             chat_id=config.ADMIN_ID,
+#             photo=get_media_id(message),
+#             caption=message.caption,
+#         )
+#         return
+#
+#     builder = MediaGroupBuilder()
+#     for message in media_group:
+#         builder.add(
+#             type=InputMediaType.VIDEO if message.video else InputMediaType.PHOTO,
+#             media=get_media_id(message),
+#             caption=message.caption,
+#             caption_entities=message.caption_entities,
+#             has_spoiler=message.has_media_spoiler,
+#             parse_mode=None,
+#         )
+#
+#     media = builder.build()
+#
+#     await bot.send_media_group(
+#         chat_id=config.ADMIN_ID,
+#         media=media,
+#     )
+#
