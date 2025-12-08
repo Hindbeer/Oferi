@@ -12,11 +12,12 @@
 
 Oferi is a Telegram bot for Telegram channels. The project accepts posts suggested by subscribers, which the administrator can then publish to the channel.
 
-### In plans
+### In plans (🔴 - priority / 🟢 - last of all)
 
-- **MVP** — make a minimal working version
-- **Menu** — create a custom menu with settings
-- **Media group** — implement media group forwarding
+- 🔴 **MVP** — make a minimal working version
+- 🟡 **Menu** — create a custom menu with settings
+- 🟢 **Lang** — multi-language support
+- 🔴 **Media group** — implement media group forwarding
 
 ### Key Features
 
