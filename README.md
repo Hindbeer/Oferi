@@ -62,13 +62,3 @@ Links that may be useful to you
 - 🗄 [Site](https://hindbeer.github.io/Hindbeer-site/) — author's personal website
 
 ### 
-
-
-<div align="center">
-   <div>
-   <img src="https://i.pinimg.com/originals/52/ce/57/52ce57e7e3cbb5a31cc7792180d734d9.gif"/> <br>
-   <a href="https://t.me/G0golMogol" target="_blank"><img src="https://img.shields.io/badge/-Telegram-%23333?style=for-the-badge&logo=telegram&logoColor=white" /></a>
-   <a href = "mailto:anonelifof@gmail.com"><img src="https://img.shields.io/badge/-Gmail-%23333?style=for-the-badge&logo=gmail&logoColor=white"></a>
-   <a href = "https://www.youtube.com/@kuve."><img src="https://img.shields.io/badge/YouTube-%23333.svg?style=for-the-badge&logo=YouTube&logoColor=white"></a>
-  </div>
-</div>
