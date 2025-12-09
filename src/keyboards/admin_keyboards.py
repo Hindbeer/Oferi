@@ -1,14 +1,15 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
-admin_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
+admin_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
         [
-            InlineKeyboardButton(text="пост", callback_data="post_to_channel"),
-            InlineKeyboardButton(text="удалить", callback_data="delete"),
+            KeyboardButton(text="пост", callback_data="post_to_channel"),
+            KeyboardButton(text="удалить", callback_data="delete"),
         ],
         [
-            InlineKeyboardButton(text="заблокировать", callback_data="ban_user"),
+            KeyboardButton(text="заблокировать", callback_data="ban_user"),
         ],
-    ]
+    ],
+    resize_keyboard=True,
 )

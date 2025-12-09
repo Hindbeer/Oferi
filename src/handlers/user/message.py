@@ -1,17 +1,13 @@
 from aiogram import Bot, F, Router
+from aiogram.enums import ParseMode, InputMediaType
 from aiogram.filters import CommandStart
-from aiogram.types import InputMediaPhoto, InputMediaVideo, Message
-# from aiogram.utils.markdown import link, text
-
-from aiogram.enums import ParseMode
+from aiogram.types import Message
+from aiogram.utils.media_group import MediaGroupBuilder
 
 from config import settings
-from keyboards.admin_keyboards import admin_keyboard
-from utils.media_utils import MediaUtils
 
 router = Router()
 bot = Bot(settings.BOT_TOKEN)
-media_utils = MediaUtils(bot)
 
 
 @router.message(CommandStart())
@@ -71,41 +67,52 @@ async def forward_text(message: Message) -> None:
     await message.answer("Сообщение было отправлено!")
 
 
+# ToDo: mb refactor
 @router.message()
-async def forward_media_group(
+async def forward_media(
     message: Message,
     album: list[Message] | None = None,
 ) -> None:
-    if album:
-        media_group = []
-        for i, media_message in enumerate(album):
-            # Обработка фото
-            if media_message.photo:
-                media_group.append(
-                    InputMediaPhoto(
-                        media=media_message.photo[-1].file_id,
-                        caption=(
-                            build_caption(message) if i == 0 else media_message.caption
-                        ),
-                        parse_mode=ParseMode.HTML,
-                    )
-                )
-
-            # Обработка видео
-            elif media_message.video:
-                media_group.append(
-                    InputMediaVideo(
-                        media=media_message.video.file_id,
-                        caption=(
-                            build_caption(message) if i == 0 else media_message.caption
-                        ),
-                        parse_mode=ParseMode.HTML,
-                    )
-                )
-
-        await bot.send_media_group(chat_id=settings.ADMIN_ID, media=media_group)
-        await message.answer("Сообщение было отправлено!")
+    """
+    Оптравка медиа, в том числе группы медиа
+    """
+    if message.video:
+        await bot.send_video(
+            chat_id=settings.ADMIN_ID,
+            video=message.video.file_id,
+            caption=build_caption(message),
+            parse_mode=ParseMode.HTML,
+        )
     else:
-        # Медиа одно
-        await media_utils.send_media(message=message, caption=build_caption(message))
-        await message.answer("Сообщение было отправлено!")
+        await bot.send_photo(
+            chat_id=settings.ADMIN_ID,
+            photo=message.photo[-1].file_id,
+            caption=build_caption(message),
+            parse_mode=ParseMode.HTML,
+        )
+
+    """Если фото/видео одно"""
+    if not album:
+        return None
+
+    """Если группа медиа"""
+    builder = MediaGroupBuilder()
+
+    for i, media_message in enumerate(album):
+        builder.add(
+            type=(
+                InputMediaType.VIDEO if media_message.video else InputMediaType.PHOTO
+            ),
+            media=(
+                media_message.video.file_id
+                if media_message.video
+                else media_message.photo[-1].file_id
+            ),
+            caption=build_caption(message) if i == 0 else media_message.caption,
+            parse_mode=ParseMode.HTML,
+        )
+
+    media_group = builder.build()
+
+    await bot.send_media_group(chat_id=settings.ADMIN_ID, media=media_group)
+    await message.answer("Сообщение было отправлено!")
