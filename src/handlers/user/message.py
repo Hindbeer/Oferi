@@ -1,7 +1,9 @@
 from aiogram import Bot, F, Router
 from aiogram.filters import CommandStart
 from aiogram.types import InputMediaPhoto, InputMediaVideo, Message
-from aiogram.utils.markdown import link, text
+# from aiogram.utils.markdown import link, text
+
+from aiogram.enums import ParseMode
 
 from config import settings
 from keyboards.admin_keyboards import admin_keyboard
@@ -26,15 +28,35 @@ def is_text_message(message: Message) -> bool:
     return True if message.text else False
 
 
+def escape_html(text: str) -> str:
+    """
+    Экранирование спецсимволов HTML
+    """
+    return (
+        text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("'", "&#x27;")
+    )
+
+
 def build_caption(message: Message) -> str:
     """
     Создание подписи под сообщением
     """
-    orginal_caption = (
+    original_caption = (
         message.text if is_text_message(message) else message.caption or ""
     )
-    text_link = link(title=f"👤 {message.from_user.full_name}", url=settings.BOT_LINK)
-    caption = text(orginal_caption, text_link, sep="\n\n")
+
+    safe_caption = escape_html(original_caption)
+    text_link = (
+        f'<a href="{settings.BOT_LINK}">'
+        f"👤 {escape_html(message.from_user.full_name)}"
+        "</a>"
+    )
+    caption = f"{safe_caption}\n\n{text_link}"
+
     return caption
 
 
@@ -43,7 +65,8 @@ async def forward_text(message: Message) -> None:
     await bot.send_message(
         chat_id=settings.ADMIN_ID,
         text=build_caption(message),
-        reply_markup=admin_keyboard,
+        parse_mode=ParseMode.HTML,
+        disable_web_page_preview=True,
     )
     await message.answer("Сообщение было отправлено!")
 
@@ -64,6 +87,7 @@ async def forward_media_group(
                         caption=(
                             build_caption(message) if i == 0 else media_message.caption
                         ),
+                        parse_mode=ParseMode.HTML,
                     )
                 )
 
@@ -75,6 +99,7 @@ async def forward_media_group(
                         caption=(
                             build_caption(message) if i == 0 else media_message.caption
                         ),
+                        parse_mode=ParseMode.HTML,
                     )
                 )
 
