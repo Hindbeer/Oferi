@@ -103,7 +103,7 @@ async def forward_media_group(
                     )
                 )
 
-        await message.answer_media_group(media_group)
+        await bot.send_media_group(chat_id=settings.ADMIN_ID, media=media_group)
         await message.answer("Сообщение было отправлено!")
     else:
         # Медиа одно
