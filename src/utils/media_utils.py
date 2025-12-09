@@ -1,5 +1,5 @@
 from aiogram import Bot
-from aiogram.types import Message, ReplyMarkupUnion
+from aiogram.types import Message
 from aiogram.enums import ParseMode
 
 from config import settings
@@ -12,9 +12,7 @@ class MediaUtils:
     def get_media_id(self, message: Message) -> str:
         return message.video and message.video.file_id or message.photo[-1].file_id
 
-    async def send_media(
-        self, message: Message, caption: str, reply_markup: ReplyMarkupUnion
-    ) -> None:
+    async def send_media(self, message: Message, caption: str) -> None:
         if message.photo:
             await self.bot.send_photo(
                 chat_id=settings.ADMIN_ID,
