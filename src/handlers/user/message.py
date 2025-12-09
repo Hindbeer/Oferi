@@ -107,9 +107,5 @@ async def forward_media_group(
         await message.answer("Сообщение было отправлено!")
     else:
         # Медиа одно
-        await media_utils.send_media(
-            message=message,
-            caption=build_caption(message),
-            reply_markup=admin_keyboard,
-        )
+        await media_utils.send_media(message=message, caption=build_caption(message))
         await message.answer("Сообщение было отправлено!")
