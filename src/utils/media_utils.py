@@ -1,8 +1,7 @@
 from aiogram import Bot
-from aiogram.enums import ParseMode
 from aiogram.types import Message, ReplyMarkupUnion
 
-import config
+from config import settings
 
 
 class MediaUtils:
@@ -17,17 +16,15 @@ class MediaUtils:
     ) -> None:
         if message.photo:
             await self.bot.send_photo(
-                chat_id=config.ADMIN_ID,
+                chat_id=settings.ADMIN_ID,
                 photo=self.get_media_id(message),
                 caption=caption,
-                parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=reply_markup,
             )
         elif message.video:
             await self.bot.send_video(
-                chat_id=config.ADMIN_ID,
+                chat_id=settings.ADMIN_ID,
                 video=self.get_media_id(message),
                 caption=caption,
-                parse_mode=ParseMode.MARKDOWN_V2,
                 reply_markup=reply_markup,
             )

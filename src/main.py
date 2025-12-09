@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-import config
+from config import settings
 from handlers.user import message
 from midlewares.album_midleware import AlbumMiddleware
 
@@ -13,9 +13,11 @@ dp = Dispatcher()
 
 async def main() -> None:
     bot = Bot(
-        token=config.BOT_TOKEN,
+        token=settings.BOT_TOKEN,
         default=DefaultBotProperties(
-            parse_mode=ParseMode.HTML, disable_notification=True
+            parse_mode=ParseMode.MARKDOWN_V2,
+            disable_notification=True,
+            link_preview_is_disabled=True,
         ),
     )
 
