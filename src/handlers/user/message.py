@@ -1,19 +1,17 @@
 from aiogram import Bot, F, Router
+from aiogram.enums import ParseMode
 
 # from aiogram.enums import InputMediaType
 # from aiogram.utils.media_group import MediaGroupBuilder
 from aiogram.filters import CommandStart
 from aiogram.types import Message
-from aiogram.enums import ParseMode
 from aiogram.utils.markdown import code, text
 
 import config
 from keyboards.admin_keyboards import admin_keyboard
-from midlewares.media_group_midleware import MediaGroupMidleware
 from utils.media_utils import MediaUtils
 
 router = Router()
-router.message.middleware(MediaGroupMidleware())
 bot = Bot(config.BOT_TOKEN)
 media_utils = MediaUtils(bot)
 
