@@ -1,22 +1,28 @@
-from aiogram import Bot, F, Router
+from aiogram import F, Router
 from aiogram.enums import InputMediaType
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 
+from keyboards import admin_keyboards, user_keyboards
 from config import settings
+
 from models import Post
 from type import File
 
 router = Router()
-bot = Bot(settings.BOT_TOKEN)
 
 
 @router.message(CommandStart())
 async def command_start_handler(message: Message) -> None:
-    await message.answer(
-        "Добро пожаловать! Кидайте сюда свои смешные приколы и анекдоты. Ваши приколы оценят админы и запостят в телеграм канал"
+    keyboard = (
+        admin_keyboards.admin_menu_keyboard
+        if message.from_user.id == settings.ADMIN_ID
+        else user_keyboards.user_menu_keyboard
     )
-    print(message)
+    await message.answer(
+        "Добро пожаловать! Кидайте сюда свои смешные приколы и анекдоты. Ваши приколы оценят админы и запостят в телеграм канал",
+        reply_markup=keyboard,
+    )
 
 
 @router.message(~F.text.startswith("/"), ~F.photo, ~F.video)
@@ -33,7 +39,9 @@ async def forward_text(message: Message) -> None:
     await message.answer("Сообщение было отправлено!")
 
 
-# ToDo: mb refactor
+# TODO: Добавить фильтр для сообщений с группой фото и без
+
+
 @router.message()
 async def forward_media(
     message: Message,
@@ -44,7 +52,7 @@ async def forward_media(
     """
 
     files: list[File] = []
-    text: str
+    text: str = ""
 
     if not album:
         """Если фото/видео одно"""

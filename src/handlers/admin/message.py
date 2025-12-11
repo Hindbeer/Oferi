@@ -1,10 +1,10 @@
-from aiogram import Bot, Router
+from aiogram import Bot, F, Router
 from aiogram.enums import ParseMode
-from aiogram.filters import Command
 from aiogram.types import Message
 from aiogram.utils.media_group import MediaGroupBuilder
 
 from config import settings
+from keyboards import admin_keyboards
 from models import Post
 from utils import CaptionUtils
 
@@ -12,8 +12,8 @@ router = Router()
 bot = Bot(settings.BOT_TOKEN)
 
 
-@router.message(Command("all"))
-async def forward_text(message: Message) -> None:
+@router.message(F.text.lower() == "🗂 посты")
+async def all_posts(message: Message) -> None:
     posts = await Post.find_all().to_list()
 
     for post in posts:
@@ -36,3 +36,25 @@ async def forward_text(message: Message) -> None:
             await message.answer_media_group(media_group)
         else:
             await message.answer(text)
+
+
+@router.message(F.text.lower() == "🔙 главное меню")
+async def back_to_main_menu(message: Message) -> None:
+    await message.answer(
+        "Главное меню:", reply_markup=admin_keyboards.admin_menu_keyboard
+    )
+
+
+@router.message(F.text.lower() == "⚙️ настройки")
+async def settings_menu(message: Message) -> None:
+    await message.answer(
+        "Настройки:", reply_markup=admin_keyboards.admin_settings_menu_keyboard
+    )
+
+
+@router.message(F.text.lower() == "✅ разбанить")
+async def unbun_menu(message: Message) -> None:
+    await message.answer(
+        "Введите id/username пользователя:",
+        reply_markup=admin_keyboards.admin_settings_menu_keyboard,
+    )
