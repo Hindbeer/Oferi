@@ -5,8 +5,10 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from config import settings
-from handlers.user import message
+from handlers import router as main_router
 from midlewares.album_midleware import AlbumMiddleware
+
+from utils import db
 
 dp = Dispatcher()
 
@@ -21,7 +23,9 @@ async def main() -> None:
         ),
     )
 
-    dp.include_routers(message.router)
+    await db.init()
+
+    dp.include_routers(main_router)
     dp.message.middleware(AlbumMiddleware())
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)

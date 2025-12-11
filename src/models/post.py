@@ -1,10 +1,6 @@
 from beanie import Document
-from pydantic import BaseModel
 
-
-class File(BaseModel):
-    type: str
-    file_id: str
+from type import File
 
 
 class Post(Document):

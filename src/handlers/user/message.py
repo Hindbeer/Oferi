@@ -1,10 +1,11 @@
 from aiogram import Bot, F, Router
-from aiogram.enums import InputMediaType, ParseMode
+from aiogram.enums import InputMediaType
 from aiogram.filters import CommandStart
 from aiogram.types import Message
-from aiogram.utils.media_group import MediaGroupBuilder
 
 from config import settings
+from models import Post
+from type import File
 
 router = Router()
 bot = Bot(settings.BOT_TOKEN)
@@ -18,53 +19,17 @@ async def command_start_handler(message: Message) -> None:
     print(message)
 
 
-def is_text_message(message: Message) -> bool:
-    """
-    Проверка сообщение на текстовое ли оно
-    """
-    return True if message.text else False
-
-
-def escape_html(text: str) -> str:
-    """
-    Экранирование спецсимволов HTML
-    """
-    return (
-        text.replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace('"', "&quot;")
-        .replace("'", "&#x27;")
-    )
-
-
-def build_caption(message: Message) -> str:
-    """
-    Создание подписи под сообщением
-    """
-    original_caption = (
-        message.text if is_text_message(message) else message.caption or ""
-    )
-
-    safe_caption = escape_html(original_caption)
-    text_link = (
-        f'<a href="{settings.BOT_LINK}">'
-        f"👤 {escape_html(message.from_user.full_name)}"
-        "</a>"
-    )
-    caption = f"{safe_caption}\n\n{text_link}"
-
-    return caption
-
-
 @router.message(~F.text.startswith("/"), ~F.photo, ~F.video)
 async def forward_text(message: Message) -> None:
-    await bot.send_message(
-        chat_id=settings.ADMIN_ID,
-        text=build_caption(message),
-        parse_mode=ParseMode.HTML,
-        disable_web_page_preview=True,
+    post: Post = Post(
+        user_id=message.from_user.id,
+        user_full_name=message.from_user.full_name,
+        caption=message.text,
+        media=None,
     )
+
+    await post.insert()
+
     await message.answer("Сообщение было отправлено!")
 
 
@@ -77,43 +42,44 @@ async def forward_media(
     """
     Оптравка медиа, в том числе группы медиа
     """
-    if message.video:
-        await bot.send_video(
-            chat_id=settings.ADMIN_ID,
-            video=message.video.file_id,
-            caption=build_caption(message),
-            parse_mode=ParseMode.HTML,
-        )
-    else:
-        await bot.send_photo(
-            chat_id=settings.ADMIN_ID,
-            photo=message.photo[-1].file_id,
-            caption=build_caption(message),
-            parse_mode=ParseMode.HTML,
-        )
 
-    """Если фото/видео одно"""
+    files: list[File] = []
+    text: str
+
     if not album:
-        return None
-
-    """Если группа медиа"""
-    builder = MediaGroupBuilder()
-
-    for i, media_message in enumerate(album):
-        builder.add(
-            type=(
-                InputMediaType.VIDEO if media_message.video else InputMediaType.PHOTO
-            ),
-            media=(
-                media_message.video.file_id
-                if media_message.video
-                else media_message.photo[-1].file_id
-            ),
-            caption=build_caption(message) if i == 0 else media_message.caption,
-            parse_mode=ParseMode.HTML,
+        """Если фото/видео одно"""
+        files.append(
+            File(
+                type=InputMediaType.VIDEO if message.video else InputMediaType.PHOTO,
+                file_id=message.video.file_id
+                if message.video
+                else message.photo[-1].file_id,
+            )
         )
 
-    media_group = builder.build()
+        text = message.caption
 
-    await bot.send_media_group(chat_id=settings.ADMIN_ID, media=media_group)
+    else:
+        """Если группа медиа"""
+        for i, media_message in enumerate(album):
+            files.append(
+                File(
+                    type=InputMediaType.VIDEO
+                    if media_message.video
+                    else InputMediaType.PHOTO,
+                    file_id=media_message.video.file_id
+                    if media_message.video
+                    else media_message.photo[-1].file_id,
+                )
+            )
+            text = media_message.caption if i == 0 else text
+
+    post = Post(
+        user_id=message.from_user.id,
+        user_full_name=message.from_user.full_name,
+        caption=text,
+        media=files,
+    )
+
+    await post.insert()
     await message.answer("Сообщение было отправлено!")
