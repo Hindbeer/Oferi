@@ -1,5 +1,5 @@
 from aiogram import Bot, F, Router
-from aiogram.enums import ParseMode, InputMediaType
+from aiogram.enums import InputMediaType, ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from aiogram.utils.media_group import MediaGroupBuilder
@@ -15,6 +15,7 @@ async def command_start_handler(message: Message) -> None:
     await message.answer(
         "Добро пожаловать! Кидайте сюда свои смешные приколы и анекдоты. Ваши приколы оценят админы и запостят в телеграм канал"
     )
+    print(message)
 
 
 def is_text_message(message: Message) -> bool:
