@@ -5,10 +5,10 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.utils.media_group import MediaGroupBuilder
 
 from config import settings
+from filters import Admin
 from keyboards import admin_keyboards
 from models import Post
 from utils import CaptionUtils, ViewPostsState
-from filters import Admin
 
 router = Router()
 bot = Bot(settings.BOT_TOKEN)
