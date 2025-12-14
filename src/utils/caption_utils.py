@@ -5,7 +5,7 @@ class CaptionUtils:
     @staticmethod
     def escape_html(text: str) -> str:
         """
-        Экранирование спецсимволов HTML
+        Escaping special characters in HTML
         """
         return (
             text.replace("&", "&amp;")
@@ -18,7 +18,7 @@ class CaptionUtils:
     @staticmethod
     def build_caption(text: str | None, user_full_name: str) -> str:
         """
-        Создание подписи под сообщением
+        Creating a signature for a message
         """
 
         safe_caption = CaptionUtils.escape_html(text) if text is not None else ""
